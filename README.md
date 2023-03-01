@@ -8,6 +8,6 @@ The project consisted of various aspects: asynchronous programming, 2D sprite as
 
 These aspects constitute the focus of my learning in the development of this project, as there were many things I had to first learn before implementing.
 
-![]()
-
+![](https://github.com/TognaBologna09/MockingBird/blob/main/MBMain.PNG)
+![](https://github.com/TognaBologna09/MockingBird/blob/main/MBPlay4.PNG)
  
