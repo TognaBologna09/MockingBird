@@ -11,12 +11,17 @@ public class GameManager : MonoBehaviour
     // UI Elements
     [SerializeField]
     private GameObject playView;
+    [SerializeField]
+    private GameObject playSixView;
 
-    // Default Game variables
+    [Space(8)]
+    [Header("Default Game variables")]
     public IntVariable level;
     public IntVariable lives;
+    public IntVariable score;
 
     List<string> optionsFour = new List<string>() { "a", "b", "c", "d" };
+    List<string> optionsSix = new List<string>() { "z", "a", "b", "c", "d", "e" };
     List<string> rhtyhmOptions = new List<string>() { "qn", "en", "sn" };
     List<(string, string)> rhythmSequence = new List<(string, string)>();
 
@@ -25,9 +30,10 @@ public class GameManager : MonoBehaviour
 
     static System.Random random = new System.Random();
 
-    private int optionAdditionCount = 1;
 
-    // Default Booleans to sequence Update Loop    
+    [Space(8)]
+    [Header(" Default Booleans to sequence Update Loop")]
+    public BoolVariable volumeMute;
     public BoolVariable gameSequencing;
     public BoolVariable playerSequencing;
  
@@ -35,33 +41,41 @@ public class GameManager : MonoBehaviour
     public bool accurateSequenceCase = false;
     public bool trialCase = false;
     public bool lengthCheckComplete = false;
+    public bool asyncTaskComplete = false;
 
-    // Default Sequence Timer variables
+    [Space(8)]
+    [Header("Default Sequence Timer variables")]
     public IntVariable periodMs;
     public FloatVariable tempo;
 
     private float beatDuration;
 
-    // Chaos Mode Game Variables
-    public BoolVariable chaosMode;
-    private int previousChaoticOptionCount = 0;
-    private int chaoticOptionCount = 0;
-    private bool chaoticOptionComplete = false;
+    [Space(8)]
+    [Header("Six Mode Game Variables")]
+    public BoolVariable sixMode;
 
-    // Audio
-    public AudioSource sourceN;
-    public AudioSource sourceE;
-    public AudioSource sourceS;
-    public AudioSource sourceW;
+    //[Space(8)]
+    //[Header("Chaos Mode Game Variables")]
+    //public BoolVariable chaosMode;
+    //public int chaoticOptionCount = 0;
+    //private bool chaoticOptionComplete = false;
+    //public bool chaosRoundOne = true;
+    //public int summedRNG = 0;
 
-    // Animators
-    public Animator redLight;
-    public Animator greenLight;
+    //[Space(8)]
+    //[Header("Audio, Animators")]
+
+    //[Space(4)]
+    //// Animators
+    //public Animator redLight;
+    //public Animator greenLight;
 
     // Cancellation Tokens and Sources
     CancellationTokenSource source = null;
     //CancellationToken token = source.Token;
 
+    [Space(8)]
+    [Header("Debug")]
     public bool isDebugMode;
 
     private void Start()
@@ -69,8 +83,10 @@ public class GameManager : MonoBehaviour
         level.Value = 0;
         lives.Value = 2;
         tempo.Value = 60;
-        optionAdditionCount = 1;
-        chaosMode.Value = false;
+
+        volumeMute.Value = false;
+        sixMode.Value = false;
+       
     }
 
     public async Task MainBasic()
@@ -108,65 +124,117 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public async Task MainChaos()
+    public async Task MainSixBasic()
     {
+
+        int randomOption = random.Next(optionsSix.Count);
 
         source = new CancellationTokenSource();
 
         if (gameSequencing)
         {
-            if (sequenceBasic.Count < level.Value + chaoticOptionCount && lives.Value > 0)
+
+            if (sequenceBasic.Count < level.Value + 1 && lives.Value > 0)
             {
                 if (isDebugMode)
                 {
-                    Debug.Log("MainChaos Adding to Sequence Statement");
+                    Debug.Log("MainSixBasic Adding to Sequence Statement");
                 }
 
                 // the sequence length is not sufficient for the level; add a random tone to sequence
-                for(int i = 0; i < chaoticOptionCount; i++)
-                {
-                    int randomOption = random.Next(optionsFour.Count);
-                    sequenceBasic.Add(optionsFour[randomOption]);
-                }
+                sequenceBasic.Add(optionsSix[randomOption]);
 
                 playerSequencing.Value = false;
                 gameSequencing.Value = true;
 
                 await AsyncSequence(sequenceBasic, beatDuration, lives.Value, source, isDebugMode);
-                
+
                 gameSequencing.Value = false;
                 playerSequencing.Value = true;
 
-                chaoticOptionComplete = false;
-
             }
 
-        }
 
+        }
     }
 
-    private void MainChaosThread()
-    {
-        if (!chaoticOptionComplete)
-        {
-            chaoticOptionCount = UnityEngine.Random.Range(1, 3);
-            optionAdditionCount = chaoticOptionCount;
-            chaoticOptionComplete = true;
-        }
-        
+    //public async Task MainChaos()
+    //{
+
+    //    source = new CancellationTokenSource();
+
+    //    if (gameSequencing)
+    //    {
+
+    //        if (sequenceBasic.Count < (summedRNG ) && playView.activeInHierarchy && lives.Value > 0)
+    //        {
+    //            if (isDebugMode)
+    //            {
+    //                Debug.Log("MainChaos begin Task");
+    //                Debug.Log("MainChaos sequence count, chaotic option count: " + sequenceBasic.Count + " & " + (chaoticOptionCount));
+    //                Debug.Log("The summed RNG is: " + summedRNG);
+    //            }
+
+                
+    //            // the sequence length is not sufficient for the level; add a random tone to sequence
+    //            for (int i = 0; i < chaoticOptionCount; i++)
+    //            {
+    //                int randomOption = random.Next(optionsFour.Count);
+    //                sequenceBasic.Add(optionsFour[randomOption]);
+    //            }
+
+    //            playerSequencing.Value = false;
+    //            gameSequencing.Value = true;
+
+    //            await AsyncSequence(sequenceBasic, beatDuration, lives.Value, source, isDebugMode);
+                
+    //            gameSequencing.Value = false;
+    //            playerSequencing.Value = true;
+
+    //            chaoticOptionComplete = false;
+
+    //            if (isDebugMode)
+    //            {
+    //                Debug.Log("MainChaos end of Task");
+    //                Debug.Log("MainChaos truth: " + sequenceBasic.Count + " < " + (summedRNG + 1));
+    //            }
+
+    //        }
+
+    //    }
+
+    //}
+
+    //private void MainChaosThread()
+    //{
+    //    //if (!chaoticOptionComplete)
+    //    //{
+    //    //    chaoticOptionCount = UnityEngine.Random.Range(1, 3);
+    //    //    summedRNG += chaoticOptionCount;
+    //    //    chaoticOptionComplete = true;
+    //    //}
+
+    //    //if (isDebugMode)
+    //    //{
+    //    //    Debug.Log("The current RNG is: " + chaoticOptionCount);
+    //    //    Debug.Log("The summed RNG is: " + summedRNG);
+    //    //}
    
-    }
+    //}
 
     public void Reset()
     {
-        Animator animN = GameObject.Find("NoiseButton 1").GetComponent<Animator>();
-        animN.Play("Normal"); 
-        Animator animE = GameObject.Find("NoiseButton 2").GetComponent<Animator>();
-        animE.Play("Normal");
-        Animator animS = GameObject.Find("NoiseButton 3").GetComponent<Animator>();
-        animS.Play("Normal");
-        Animator animW = GameObject.Find("NoiseButton 4").GetComponent<Animator>();
-        animW.Play("Normal");
+        if (playView.activeInHierarchy)
+        {
+            Animator animN = GameObject.Find("NoiseButton 1").GetComponent<Animator>();
+            animN.Play("Normal");
+            Animator animE = GameObject.Find("NoiseButton 2").GetComponent<Animator>();
+            animE.Play("Normal");
+            Animator animS = GameObject.Find("NoiseButton 3").GetComponent<Animator>();
+            animS.Play("Normal");
+            Animator animW = GameObject.Find("NoiseButton 4").GetComponent<Animator>();
+            animW.Play("Normal");
+        }
 
         userSequenceBasic.Clear();
         sequenceBasic.Clear();
@@ -174,84 +242,102 @@ public class GameManager : MonoBehaviour
         lives.Value = 2;
         level.Value = 0;
 
+        //summedRNG = 0;
+        //chaosRoundOne = true;
+
         source = new CancellationTokenSource();
+
     }
 
     private void Update()
     {
+        
+        score.Value = sequenceBasic.Count;
 
         beatDuration = 60.0f / tempo.Value;
-
         
-        
-        if(!chaosMode.Value)
+        if(!sixMode.Value)
         {
-            optionAdditionCount = 1;
 
-            if (!gameSequencing.Value && sequenceBasic.Count < level.Value + optionAdditionCount && playView.activeInHierarchy && lives.Value >= 1)
+            if (!gameSequencing.Value && sequenceBasic.Count < level.Value + 1 && playView.activeInHierarchy && lives.Value >= 1)
             {
+
                 if (isDebugMode)
                 {
-                    Debug.Log("Update loop MainBasic Method Call");
-                    Debug.Log("The number of tones added is: " + optionAdditionCount);
+                    Debug.Log("UpdateBasic truth: " + !gameSequencing.Value + " --> " + sequenceBasic.Count + " < " + (level.Value + 1));
                 }
 
                 gameSequencing.Value = true;
 
+                // generate new tones
                 MainBasic();
 
             }
+
         }
-        else
+
+        if(sixMode.Value)
         {
-            if (!chaoticOptionComplete)
+
+            if (!gameSequencing.Value && sequenceBasic.Count < level.Value + 1 && playSixView.activeInHierarchy && lives.Value >= 1)
             {
-                previousChaoticOptionCount = chaoticOptionCount;
-            }
 
-            MainChaosThread();
-            
-            
-
-            if(level.Value == 0)
-            {
-                if(!gameSequencing.Value && playView.activeInHierarchy && lives.Value >= 1)
-                {
-                    gameSequencing.Value = true;
-                    
-                    if (isDebugMode)
-                    {
-
-                        Debug.Log("The number of chaotic tones added is: " + chaoticOptionCount);
-                        Debug.Log(sequenceBasic.Count + "should be less than" + (level.Value + chaoticOptionCount));
-                    }
-                    MainChaos(); 
-                }
-               
-            }
-
-            if (!gameSequencing.Value && sequenceBasic.Count < level.Value + previousChaoticOptionCount && playView.activeInHierarchy && lives.Value >= 1)
-            {
                 if (isDebugMode)
                 {
-                    Debug.Log("Update loop MainChaos Method Call");
-                    Debug.Log("The number of tones added is: " + chaoticOptionCount);
+                    Debug.Log("UpdateBasic truth: " + !gameSequencing.Value + " --> " + sequenceBasic.Count + " < " + (level.Value + 1));
                 }
 
                 gameSequencing.Value = true;
 
-                MainChaos();
+                // generate new tones
+                MainSixBasic();
 
             }
         }
-        
 
+        //else
+        //{
+        //    if (!gameSequencing.Value && level.Value == 0 && playView.activeInHierarchy && lives.Value >= 1 && chaosRoundOne)
+        //    {
+        //        GenerateRNG();
+
+        //        gameSequencing.Value = true;
+
+        //        // generate new tones
+        //        MainChaos();
+
+        //        chaosRoundOne = false;
+        //    }
+
+        //    if (summedRNG == 0)
+        //    {
+        //        GenerateRNG();
+        //    }
+
+        //    if (!gameSequencing.Value && sequenceBasic.Count < (summedRNG + 1) && chaosUserSuccess && playView.activeInHierarchy && lives.Value >= 1)
+        //    {
+        //        if (isDebugMode)
+        //        {
+        //            Debug.Log("UpdateMainChaos truth: " + !gameSequencing.Value + "," + chaosUserSuccess + " --> " + sequenceBasic.Count + " < " + (summedRNG + 1));
+                   
+        //        }
+
+        //        gameSequencing.Value = true;
+                
+                
+
+        //        // generate new tones
+        //        MainChaos();
+               
+
+        //    }
+        //}
+         
         SequenceAccuracyCheck();
 
         AccuracyCaseThread();
 
         SequenceLengthCheck();
-
 
     }
 
@@ -299,7 +385,9 @@ public class GameManager : MonoBehaviour
             Debug.Log("Async Commencing");
             Debug.Log("Lives: " + lifeCount);
         }
+
         
+
         // First check if there are enough lives available, then commence
         if (lifeCount > 0)
         {
@@ -327,8 +415,17 @@ public class GameManager : MonoBehaviour
 
                 await Task.Delay((int)Math.Round(period * 500), tokenSource.Token);
 
-                //Debug.Log(i);
+                
                 // Read the randomly generated list of tones, play them
+                if (tones[i] == "z")
+                {
+                    AudioSource source0 = GameObject.Find("NoiseButton 0").GetComponent<AudioSource>();
+                    Animator anim0 = GameObject.Find("NoiseButton 0").GetComponent<Animator>();
+
+                    source0.Play();
+                    anim0.Play("Pressed");
+                }
+
                 if (tones[i] == "a")
                 {
                     AudioSource sourceN = GameObject.Find("NoiseButton 1").GetComponent<AudioSource>();
@@ -361,6 +458,14 @@ public class GameManager : MonoBehaviour
                     sourceW.Play();
                     animW.Play("Pressed");
                 }
+                if (tones[i] == "e")
+                {
+                    AudioSource source5 = GameObject.Find("NoiseButton 5").GetComponent<AudioSource>();
+                    Animator anim5 = GameObject.Find("NoiseButton 5").GetComponent<Animator>();
+
+                    source5.Play();
+                    anim5.Play("Pressed");
+                }
 
                 if (isDebug)
                 {
@@ -381,10 +486,12 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            await Task.Delay((int)Math.Round(period * 1000));
+            
+            await Task.Delay((int)Math.Round(period * 250));
             greenLight.SetTrigger("greenLit");
             redLight.SetTrigger("redDefault");
 
+           
         }
 
     }
@@ -393,6 +500,10 @@ public class GameManager : MonoBehaviour
     {
         if (userSequenceBasic.Count <= sequenceBasic.Count && !accuracyCheckComplete)
         {
+            if(userSequenceBasic.Count > 0)
+            {
+                source.Cancel();
+            }
             // check that the inputs match the sequence up to the current input
             for (var i = 0; i < userSequenceBasic.Count; i++)
             {
@@ -403,23 +514,29 @@ public class GameManager : MonoBehaviour
                     {
                         Debug.Log("The user didn't match the sequence");
                     }
+                    
                     // error audio
                     AudioSource errorAudio = GameObject.Find("ErrorAudio").GetComponent<AudioSource>();
                     errorAudio.Play();
-
-                    
                     
                     // ~perform operations
                     
                     // rewrite the userSequence to empty the cache
                     userSequenceBasic.Clear();
 
+                    //if (chaosMode.Value)
+                    //{
+                    //    chaosUserSuccess = false;
+                    //}
+
                     accurateSequenceCase = false;
+
                     trialCase = true;
 
                     playerSequencing.Value = false;
                     accuracyCheckComplete = true;
 
+                    
                     // stop the sequence because they don't match
 
                     throw new OperationCanceledException(source.Token);
@@ -436,7 +553,12 @@ public class GameManager : MonoBehaviour
                     }
 
                     accurateSequenceCase = true;
-                
+
+                    //if (chaosMode.Value)
+                    //{
+                    //    chaosUserSuccess = true;
+                    //}
+                   
                 }
 
             }
@@ -449,7 +571,7 @@ public class GameManager : MonoBehaviour
     private void AccuracyCaseThread()
     {
         // if not accurate, and play view is active
-        if (!accurateSequenceCase && trialCase && playView.activeInHierarchy)
+        if (!accurateSequenceCase && trialCase)
         {
             // cancel the token
             source.Cancel();
@@ -485,7 +607,11 @@ public class GameManager : MonoBehaviour
 
                 // reset lives count
                 lives.Value = 2;
-                
+
+                //if (chaosMode.Value)
+                //{
+                //    chaosUserSuccess = false;
+                //}
             }
 
         }
@@ -494,6 +620,21 @@ public class GameManager : MonoBehaviour
         gameSequencing.Value = false;
 
     }
+
+    //private void GenerateRNG()
+    //{
+    //    if (!chaoticOptionComplete)
+    //    {
+    //        if (isDebugMode)
+    //        {
+    //            Debug.Log("Generating RNG #s");
+    //        }
+
+    //        chaoticOptionCount = UnityEngine.Random.Range(1, 3);
+    //        summedRNG += chaoticOptionCount;
+    //        chaoticOptionComplete = true;
+    //    }
+    //}
 
     private void SequenceLengthCheck()
     {
@@ -515,9 +656,15 @@ public class GameManager : MonoBehaviour
                 
                 level.Value++;
 
+                //if(chaosMode.Value)
+                //{
+                //    chaosUserSuccess = true;
+                //    GenerateRNG();
+                    
+                //}
                 // rewrite the userSequence to empty the cache
                 userSequenceBasic.Clear();
-
+                
             }
 
         }
@@ -534,59 +681,57 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddToneA()
+    public void AddTone0()
+    {
+        accuracyCheckComplete = false;
+        lengthCheckComplete = false;
+
+        userSequenceBasic.Add("z");
+
+    }
+
+    public void AddTone1()
     {
         accuracyCheckComplete = false;
         lengthCheckComplete = false;
 
         userSequenceBasic.Add("a");
-        //Debug.Log("userSequence Count :" + userSequenceBasic.Count);
-
-        for (var i = 0; i < userSequenceBasic.Count; i++)
-        {
-            //Debug.Log("userSequence :" + userSequenceBasic[i]);
-        }
+       
     }
 
-    public void AddToneB()
+    public void AddTone2()
     {
         accuracyCheckComplete = false;
         lengthCheckComplete = false;
 
         userSequenceBasic.Add("b");
-        //Debug.Log("userSequence Count :" + userSequenceBasic.Count);
-
-        for (var i = 0; i < userSequenceBasic.Count; i++)
-        {
-            //Debug.Log("userSequence :" + userSequenceBasic[i]);
-        }
+        
     }
 
-    public void AddToneC()
+    public void AddTone3()
     {
         accuracyCheckComplete = false;
         lengthCheckComplete = false;
 
         userSequenceBasic.Add("c");
-        //Debug.Log("userSequence Count :" + userSequenceBasic.Count);
-
-        for (var i = 0; i < userSequenceBasic.Count; i++)
-        {
-            //Debug.Log("userSequence :" + userSequenceBasic[i]);
-        }
+        
     }
 
-    public void AddToneD()
+    public void AddTone4()
     {
         accuracyCheckComplete = false;
         lengthCheckComplete = false;
 
         userSequenceBasic.Add("d");
-        //Debug.Log("userSequence Count :" + userSequenceBasic.Count);
+        
+    }
 
-        for (var i = 0; i < userSequenceBasic.Count; i++)
-        {
-           //Debug.Log("userSequence :" + userSequenceBasic[i]);
-        }
+    public void AddTone5()
+    {
+        accuracyCheckComplete = false;
+        lengthCheckComplete = false;
+
+        userSequenceBasic.Add("e");
+
     }
 }
