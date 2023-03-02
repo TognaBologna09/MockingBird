@@ -6,8 +6,14 @@ This was the first mobile app I attempted to create. Before committing to its de
 
 The project consisted of various aspects: asynchronous programming, 2D sprite asset generation, generalized mobile UI organization, audio asset generation, as well as general design principles.
 
-These aspects constitute the focus of my learning in the development of this project, as there were many things I had to first learn before implementing.
 
-![](https://github.com/TognaBologna09/MockingBird/blob/main/MBMain.PNG)
+## Screenshots 
+> The Main Menu
+![The Main Menu](https://github.com/TognaBologna09/MockingBird/blob/main/MBMain.PNG)
+
+# How to Play
+When you click play, the following screen will appear. Letters fade in and out saying, "Repeat the Sequence" as a sound and accompanying animation highlights a button for the user to repeat.
+
+> Play Screen
 ![](https://github.com/TognaBologna09/MockingBird/blob/main/MBPlay4.PNG)
- 
+
