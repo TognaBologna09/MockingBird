@@ -12,8 +12,13 @@ The project consisted of various aspects: asynchronous programming, 2D sprite as
 ![The Main Menu](https://github.com/TognaBologna09/MockingBird/blob/main/MBMain.PNG)
 
 # How to Play
-When you click play, the following screen will appear. Letters fade in and out saying, "Repeat the Sequence" as a sound and accompanying animation highlights a button for the user to repeat.
+When you click play, the following screen will appear. Letters fade in and out saying, "Repeat the Sequence" as a sound and accompanying animation highlights a button for the user to repeat. As the sequence plays, the player can 'interrupt' and begin to copy the sequence.
 
 > Play Screen
 ![](https://github.com/TognaBologna09/MockingBird/blob/main/MBPlay4.PNG)
+
+#
+After failing to copy the sequence, the player loses a 'life'. The sequence repeats itself again after a slight pause, but should the player lose their last life the next screen will appear. 
+> Score screen
+![](https://github.com/TognaBologna09/MockingBird/blob/main/MBScorecard.PNG)
 
