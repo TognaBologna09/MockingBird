@@ -6,7 +6,7 @@ This was the first mobile app I attempted to create. Before committing to its de
 
 The project consisted of various aspects: asynchronous programming, 2D sprite asset generation, generalized mobile UI organization, audio asset generation, as well as general design principles.
 
-## About the Code
+# About the Code
 Most of the code controlling the game is within the 'GameManager' script of the Scripts folder. The methods that play the randomized sequence are asynchronous task types such that they could be cancelled with cancellation token sources. The game data is organized so that a random list of strings { "a", "b", "c", "d" } is assembled with a count corresponding to the level, and then those strings determine which button fires. The user is to tap on the buttons which add the correct string to a list which is compared to the randomly generated one at runtime.  
 
 ## Screenshots 
